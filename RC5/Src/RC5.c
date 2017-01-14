@@ -9,6 +9,8 @@
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim8;
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
 typedef enum {STATE_RC5_NONE, STATE_RC5_SEND, STATE_RC5_GET} state_rc5_status_t; // перечисление состоянй автомата
  
 uint32_t ir_period_get(uint32_t ir_clk_hZ)
@@ -118,7 +120,7 @@ static void MX_TIM8_Init(void)
   sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
   sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
   sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
-  sConfigIC.ICFilter = 0;
+  sConfigIC.ICFilter = 5;
   if (HAL_TIM_IC_ConfigChannel(&htim8, &sConfigIC, TIM_CHANNEL_2) != HAL_OK)
   {
    // Error_Handler();
@@ -130,6 +132,7 @@ void rc5_init(void)
 {
   MX_TIM3_Init();
   MX_TIM8_Init();
+  HAL_TIM_IC_Start(&htim8, TIM_CHANNEL_2);
 } 
 
 void rc5_send(uint32_t *data)

@@ -63,7 +63,7 @@ void Error_Handler(void);
 static void MX_GPIO_Init(void);
 //static void MX_TIM3_Init(void);
 //static void MX_TIM8_Init(void);                                    
-void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
                                 
 
 /* USER CODE BEGIN PFP */
@@ -93,10 +93,10 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  rc5_init();
+  
 
   /* USER CODE BEGIN 2 */
-
+  rc5_init();
  
   /* USER CODE END 2 */
 
@@ -212,8 +212,6 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-
-  
 /* USER CODE END 4 */
 
 /**
