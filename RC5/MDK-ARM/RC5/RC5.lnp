@@ -1,0 +1,26 @@
+--cpu Cortex-M4.fp
+"rc5\stm32f4xx_hal_msp.o"
+"rc5\main.o"
+"rc5\stm32f4xx_it.o"
+"rc5\rc5.o"
+"rc5\system_stm32f4xx.o"
+"rc5\stm32f4xx_hal_tim.o"
+"rc5\stm32f4xx_hal_rcc.o"
+"rc5\stm32f4xx_hal.o"
+"rc5\stm32f4xx_hal_pwr_ex.o"
+"rc5\stm32f4xx_hal_flash_ex.o"
+"rc5\stm32f4xx_hal_tim_ex.o"
+"rc5\stm32f4xx_hal_gpio.o"
+"rc5\stm32f4xx_hal_flash.o"
+"rc5\stm32f4xx_hal_dma.o"
+"rc5\stm32f4xx_hal_pwr.o"
+"rc5\stm32f4xx_hal_dma_ex.o"
+"rc5\stm32f4xx_hal_flash_ramfunc.o"
+"rc5\stm32f4xx_hal_cortex.o"
+"rc5\stm32f4xx_hal_rcc_ex.o"
+"rc5\startup_stm32f407xx.o"
+--library_type=microlib --strict --scatter "RC5\RC5.sct"
+
+--diag_suppress=L6329 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "RC5.map" -o RC5\RC5.axf
