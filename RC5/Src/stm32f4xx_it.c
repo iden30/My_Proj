@@ -205,7 +205,35 @@ void TIM3_IRQHandler(void)
 void TIM8_CC_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM8_CC_IRQn 0 */
-
+  volatile static uint32_t mes_1 = 0, mes_2 = 0, result = 0; 
+  enum {RISING, FOLING};
+  volatile static uint8_t sts_puls = 0;
+  
+  if (sts_puls != FOLING)
+  {
+    sts_puls = FOLING;
+    mes_1 = TIM8->CNT;
+    HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
+  } 
+ 
+  else
+  {
+    sts_puls = RISING;
+    mes_2 = TIM8->CNT;
+    HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
+  }
+  
+  if (mes_1 > mes_2)
+  {
+    mes_1 = (65535 - mes_1);
+    result = (mes_1 + mes_2);
+  }
+  
+  else
+  {
+    result = (mes_2 - mes_1);
+  }
+  
   /* USER CODE END TIM8_CC_IRQn 0 */
   HAL_TIM_IRQHandler(&htim8);
   /* USER CODE BEGIN TIM8_CC_IRQn 1 */

@@ -10,10 +10,12 @@ TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim8;
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+uint32_t pwm_period_get(uint32_t ir_clk_hZ);
+uint32_t pwm_duty_get(uint32_t duty_precent);
 
 typedef enum {STATE_RC5_NONE, STATE_RC5_SEND, STATE_RC5_GET} state_rc5_status_t; // перечисление состоянй автомата
  
-uint32_t ir_period_get(uint32_t ir_clk_hZ)
+uint32_t pwm_period_get(uint32_t ir_clk_hZ)
 {
   uint32_t tim_clk = 0;
   
@@ -28,7 +30,7 @@ uint32_t ir_period_get(uint32_t ir_clk_hZ)
 
 uint32_t pwm_duty_get(uint32_t duty_precent)
 {
-  return ((ir_period_get(PWM_FREG) * duty_precent) / 100);
+  return ((pwm_period_get(PWM_FREG) * duty_precent) / 100);
 }
 
 /* TIM3 init function */
@@ -42,7 +44,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = ir_period_get(PWM_FREG);
+  htim3.Init.Period = pwm_period_get(PWM_FREG);
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
   {
@@ -133,6 +135,7 @@ void rc5_init(void)
   MX_TIM3_Init();
   MX_TIM8_Init();
   HAL_TIM_IC_Start(&htim8, TIM_CHANNEL_2);
+  HAL_TIM_IC_Start_IT(&htim8, TIM_CHANNEL_2);
 } 
 
 void rc5_send(uint32_t *data)
