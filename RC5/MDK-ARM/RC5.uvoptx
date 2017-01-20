@@ -207,7 +207,7 @@
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\RC5\../Src/stm32f4xx_it.c\TIM8_CC_IRQHandler\result,0x0A</ItemText>
+          <ItemText>result,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

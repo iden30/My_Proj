@@ -199,39 +199,47 @@ void TIM3_IRQHandler(void)
   /* USER CODE END TIM3_IRQn 1 */
 }
 
+
+void TIM8_TRG_COM_TIM14_IRQHandler(void)
+{
+   HAL_TIM_IRQHandler(&htim8);
+}
+
 /**
 * @brief This function handles TIM8 capture compare interrupt.
 */
 void TIM8_CC_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM8_CC_IRQn 0 */
-  volatile static uint32_t mes_1 = 0, mes_2 = 0, result = 0; 
-  enum {RISING, FOLING};
-  volatile static uint8_t sts_puls = 0;
+  static uint16_t mes_1 = 0, mes_2 = 0;
+  volatile static uint16_t result = 0, u = 0; 
+  static uint8_t sts_puls = 0;
   
-  if (sts_puls != FOLING)
+  if(__HAL_TIM_GET_FLAG(&htim8, TIM_FLAG_TRIGGER) != RESET)
   {
-    sts_puls = FOLING;
-    mes_1 = TIM8->CNT;
-    HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
-  } 
- 
-  else
-  {
-    sts_puls = RISING;
-    mes_2 = TIM8->CNT;
-    HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
-  }
-  
-  if (mes_1 > mes_2)
-  {
-    mes_1 = (65535 - mes_1);
-    result = (mes_1 + mes_2);
-  }
-  
-  else
-  {
-    result = (mes_2 - mes_1);
+    if (sts_puls == 0)
+    {
+      sts_puls = 1;
+      mes_1 = TIM8->CNT;
+      HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
+    } 
+    else
+    {
+      sts_puls = 0;
+      mes_2 = TIM8->CNT;
+      HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
+    }
+    
+    if (mes_1 > mes_2)
+    {
+      u = mes_1;
+      mes_1 = (65535 - u);
+      result =  mes_2 + mes_1;
+    }
+    else
+    {
+      result = (mes_2 - mes_1);
+    }
   }
   
   /* USER CODE END TIM8_CC_IRQn 0 */

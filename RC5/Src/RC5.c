@@ -6,8 +6,8 @@
 #define  PWM_FREG       31000 // частоа ШИМ в герцах
 #define  PWM_PRECENT       25 // скважность в процентах
 
-TIM_HandleTypeDef htim3;
-TIM_HandleTypeDef htim8;
+extern TIM_HandleTypeDef htim3;
+extern TIM_HandleTypeDef htim8;
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 uint32_t pwm_period_get(uint32_t ir_clk_hZ);
@@ -119,10 +119,10 @@ static void MX_TIM8_Init(void)
   //  Error_Handler();
   }
 
-  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_BOTHEDGE;
   sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
   sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
-  sConfigIC.ICFilter = 5;
+  sConfigIC.ICFilter = 0;
   if (HAL_TIM_IC_ConfigChannel(&htim8, &sConfigIC, TIM_CHANNEL_2) != HAL_OK)
   {
    // Error_Handler();
