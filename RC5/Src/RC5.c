@@ -3,8 +3,13 @@
 
 #include "RC5.h"
 #include "stm32f4xx_hal.h"
-#define  PWM_FREG       31000 // частоа ШИМ в герцах
-#define  PWM_PRECENT       25 // скважность в процентах
+#include "stm32f4xx_hal_tim.h"
+
+#define  PWM_FREG        36000 // частоа ШИМ в герцах
+#define  PWM_PRECENT        50 // скважность в процентах
+#define  PRESC_PERIOD      888 // период одного полубита для протокола RC5 в микросекундах
+#define  ACCEPT              5 // допуск в процентах
+
 
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim8;
@@ -136,6 +141,7 @@ void rc5_init(void)
   MX_TIM8_Init();
   HAL_TIM_IC_Start(&htim8, TIM_CHANNEL_2);
   HAL_TIM_IC_Start_IT(&htim8, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
 } 
 
 void rc5_send(uint32_t *data)
@@ -170,7 +176,80 @@ void rc5_send(uint32_t *data)
   HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1);
 }
 
-void rc5_get(uint32_t *data)
+uint16_t rc5_get(void)
 {
+    
+    static uint16_t get_data_buf[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0}; 
+    static uint16_t cnt_data_bit = 0;
+    static uint16_t point_1  = 0;
+    static uint16_t point_2  = 0;
+    static uint16_t period   = 0; 
+    static uint8_t  sts_puls = 0;
+    static uint8_t  f_period = 0; // Флаг измеренного периода IC
+    static uint8_t  cnt_nibble = 0; // Для подсчета полученных полубит
+    
+//>>>>>>>>>>>>>>>>>>>>>>>>>> Пишем значения CNT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
+    if (sts_puls == 0)
+    {
+        sts_puls = 1;
+        point_1 = TIM8->CNT;
+        HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
+    } 
+    else
+    {
+        if (f_period == 0) f_period = 1;
+        sts_puls = 0;
+        point_2 = TIM8->CNT;
+        HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
+    }
+    
+ //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    
+    //>>>>>>>>>>>>>>>>>>>>>> Декодируем данные >>>>>>>>>>>>>>>>>>>>>>>>>
+    
+    if (f_period != 0) // Если обе точки измерялись
+    {
+        period = (point_2 - point_1); // Расчитываем период
+   
+        if (  // Проверяем, поподает ли период в рамки 
+               (period >= (PRESC_PERIOD - (PRESC_PERIOD * ACCEPT) / 100)) // >= period - 5%
+            || (period <= (PRESC_PERIOD + (PRESC_PERIOD * ACCEPT) / 100)) // <= period + 5%
+           )
+            { 
+                // Если да, заполняем массив принятых данных
+                if (cnt_data_bit == 0) // Если это первый принятый бит, записываем в нулевую ячейку = 1
+                {
+                    get_data_buf[cnt_data_bit] = 1;
+                } else 
+                
+                if (cnt_nibble == 0) // Если это первый принятый болубит
+                {
+                    cnt_nibble = 1;  // меняем флаг
+                }
+                else if ((cnt_nibble == 1) && (sts_puls == 1))
+                {
+                    
+                }
+                cnt_data_bit++;
+            }
 
+    }
+ //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ 
+  //>>>>>>>>>>>>>>>>>>>>>>>>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   
+ //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    
+    
+    return period;
+}
+
+__weak void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+    static uint16_t P = 0;
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(htim);
+  /* NOTE : This function Should not be modified, when the callback is needed,
+            the __HAL_TIM_IC_CaptureCallback could be implemented in the user file
+   */
+     P = rc5_get();
 }

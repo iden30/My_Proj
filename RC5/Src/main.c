@@ -96,6 +96,7 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
   rc5_init();
+//  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
  
   /* USER CODE END 2 */
 
@@ -108,10 +109,11 @@ int main(void)
   /* USER CODE BEGIN 3 */
     rc5_send(cmd_on_off);
     HAL_Delay(5);
-    rc5_send(cmd_tv);
-    HAL_Delay(5);
-    rc5_send(cmd_mute);
-    HAL_Delay(5);
+//    rc5_send(cmd_tv);
+//    HAL_Delay(5);
+//    rc5_send(cmd_mute);
+//    HAL_Delay(5);
+      
   }
   /* USER CODE END 3 */
 
@@ -172,102 +174,6 @@ void SystemClock_Config(void)
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
-///* TIM3 init function */
-//static void MX_TIM3_Init(void)
-//{
-
-//  TIM_ClockConfigTypeDef sClockSourceConfig;
-//  TIM_MasterConfigTypeDef sMasterConfig;
-//  TIM_OC_InitTypeDef sConfigOC;
-
-//  htim3.Instance = TIM3;
-//  htim3.Init.Prescaler = 0;
-//  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-//  htim3.Init.Period = 999;
-//  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-//  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
-
-//  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-//  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
-
-//  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
-
-//  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-//  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-//  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
-
-//  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-//  sConfigOC.Pulse = 0;
-//  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-//  sConfigOC.OCFastMode = TIM_OCFAST_ENABLE;
-//  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
-
-//  HAL_TIM_MspPostInit(&htim3);
-
-//}
-
-/* TIM8 init function */
-//static void MX_TIM8_Init(void)
-//{
-
-//  TIM_ClockConfigTypeDef sClockSourceConfig;
-//  TIM_MasterConfigTypeDef sMasterConfig;
-//  TIM_IC_InitTypeDef sConfigIC;
-
-//  htim8.Instance = TIM8;
-//  htim8.Init.Prescaler = 36;
-//  htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-//  htim8.Init.Period = 65535;
-//  htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-//  htim8.Init.RepetitionCounter = 0;
-//  if (HAL_TIM_Base_Init(&htim8) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
-
-//  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-//  if (HAL_TIM_ConfigClockSource(&htim8, &sClockSourceConfig) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
-
-//  if (HAL_TIM_IC_Init(&htim8) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
-
-//  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-//  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-//  if (HAL_TIMEx_MasterConfigSynchronization(&htim8, &sMasterConfig) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
-
-//  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
-//  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
-//  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
-//  sConfigIC.ICFilter = 0;
-//  if (HAL_TIM_IC_ConfigChannel(&htim8, &sConfigIC, TIM_CHANNEL_2) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
-
-//}
 
 /** Configure pins as 
         * Analog 

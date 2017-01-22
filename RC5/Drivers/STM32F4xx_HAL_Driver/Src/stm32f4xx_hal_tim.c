@@ -127,6 +127,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
+#include "RC5.h"
 
 /** @addtogroup STM32F4xx_HAL_Driver
   * @{
@@ -4321,14 +4322,15 @@ __weak void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
   *                the configuration information for TIM module.
   * @retval None
   */
-__weak void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(htim);
-  /* NOTE : This function Should not be modified, when the callback is needed,
-            the __HAL_TIM_IC_CaptureCallback could be implemented in the user file
-   */
-}
+//__weak void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+//{
+//  /* Prevent unused argument(s) compilation warning */
+//  UNUSED(htim);
+//  /* NOTE : This function Should not be modified, when the callback is needed,
+//            the __HAL_TIM_IC_CaptureCallback could be implemented in the user file
+//   */
+//     rc5_get();
+//}
 
 /**
   * @brief  PWM Pulse finished callback in non blocking mode 

@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 extern void rc5_send(uint32_t *data);
-extern void rc5_get(uint32_t *data);
+extern uint16_t rc5_get(void);
 extern void rc5_init(void);
 
 #endif
