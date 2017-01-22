@@ -19,15 +19,15 @@ uint32_t pwm_period_get(uint32_t ir_clk_hZ);
 uint32_t pwm_duty_get(uint32_t duty_precent);
 
 typedef enum {STATE_RC5_NONE, STATE_RC5_SEND, STATE_RC5_GET} state_rc5_status_t; // перечисление состоянй автомата
- 
+
 static uint16_t get_data_buf[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0}; 
-static uint16_t Z[]            = {1,1,1,0,0,0,0,0,0,0,1,1,0,0};
-static uint16_t P[]            = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+static uint16_t Z[]            = {1,1,0,0,0,0,0,0,0,0,1,1,0,0};
+//static uint16_t P[]            = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 static uint16_t cnt_data_bit = 0;
 static uint16_t point_1  = 0;
 static uint16_t point_2  = 0;
 static uint16_t period   = 0; 
-static uint8_t  sts_puls = 0;
+static uint8_t  puls = 0;
 static uint8_t  f_period = 0; // Флаг измеренного периода IC
 static uint8_t  cnt_nibble = 0; // Для подсчета полученных полубит
 
@@ -187,18 +187,25 @@ void rc5_send(uint32_t *data)
   HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1);
 }
 
+
+
+
+
+
+
+
 uint16_t rc5_get(void)
 {
       
 //>>>>>>>>>>>>>>>>>>>>>>>>>> Пишем значения CNT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
-    if (sts_puls == 0)
+    if (puls == 0)
     {
         point_1 = TIM8->CNT;
         //HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
     } 
     else
     {
-        if (f_period == 0) f_period = 1;
+        if (!f_period) f_period = 1;
         point_2 = TIM8->CNT;
         //HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
     }
@@ -220,7 +227,7 @@ uint16_t rc5_get(void)
            if (cnt_data_bit == 0) // Если это первый принятый бит, записываем в нулевую ячейку = 1
            {
              get_data_buf[cnt_data_bit] = 1;
-             if (cnt_data_bit < 15)
+             if (cnt_data_bit < 13)
              {
                cnt_data_bit++;
              }
@@ -238,11 +245,11 @@ uint16_t rc5_get(void)
              else
              {
                cnt_nibble = 0;  // меняем флаг
-               if (sts_puls == 1)
+               if (puls == 0)
                {
-                  get_data_buf[cnt_data_bit] = 1;
+                  get_data_buf[cnt_data_bit] = 0;
                }
-                 if (cnt_data_bit < 15)
+                 if (cnt_data_bit < 13)
                  {
                    cnt_data_bit++;
                  }
@@ -258,7 +265,7 @@ uint16_t rc5_get(void)
                   ||(period <= ((PRESC_PERIOD * 2) + (PRESC_PERIOD * ACCEPT) / 100)) // <= (period * 2) + 11%
                  )
          { 
-             if (sts_puls == 1)
+             if (puls == 1)
              {
                if (cnt_nibble == 0) // Если это первый принятый болубит
                {
@@ -270,7 +277,7 @@ uint16_t rc5_get(void)
                  cnt_nibble = 0;  // меняем флаг
                  get_data_buf[cnt_data_bit] = 1;
             
-                 if (cnt_data_bit < 15)
+                 if (cnt_data_bit < 13)
                  {
                    cnt_data_bit++;
                  }
@@ -291,7 +298,7 @@ uint16_t rc5_get(void)
                {
                  cnt_nibble = 0;  // меняем флаг
                  get_data_buf[cnt_data_bit] = 0;
-                 if (cnt_data_bit < 15)
+                 if (cnt_data_bit < 13)
                  {
                    cnt_data_bit++;
                  }
@@ -302,49 +309,54 @@ uint16_t rc5_get(void)
                }
              } 
         } 
-     
-     sts_puls ^= 1;
-     return (get_data_buf[cnt_data_bit - 1]);
-   }
+    }
+    puls ^= 1;
+    return (period);
 }
+
 
 __weak void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-  static uint16_t i = 0;
-  static uint16_t u = 0;
-  static uint16_t a = 0;
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(htim);
-  /* NOTE : This function Should not be modified, when the callback is needed,
+    static uint16_t i = 0;
+    static uint16_t a = 0;
+    /* Prevent unused argument(s) compilation warning */
+    UNUSED(htim);
+    /* NOTE : This function Should not be modified, when the callback is needed,
             the __HAL_TIM_IC_CaptureCallback could be implemented in the user file
-   */
-  P[i] = rc5_get();
-  if (i < 15) 
-  {
-    i++;
-  }
-  else
-  {
-    i = 0;
-    for (u = 0; u < 15; u++)
+    */
+    
+    
+ 
+    rc5_get();    
+        
+    if ( i == 23)
     {
-      if (P[u] == Z[u])
-      { 
-        a = 1;
-      }
-      else
-      {
-        a = 0;
-      }
-    }
-    if (a == 1)
-    {
-      HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
+        for (i = 0; i < 13; i++)
+        {
+            
+            if (get_data_buf[i] == Z[i])
+            {
+              a ++;
+            }
+            else
+            {
+              if (a > 0) a--;
+            }
+        }
+        
+        if (a == 13)
+        {
+            a = 0;
+            HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+        }
+        else
+        {
+            a = 0;
+        }
+        i = 0;
     }
     else
-    {
-      HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
+    {  
+        i++;
     }
-  }
-    
 }
