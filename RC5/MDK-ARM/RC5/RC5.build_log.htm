@@ -5,10 +5,10 @@
 <h2>Tool Versions:</h2>
 IDE-Version: µVision V5.14.0.0
 Copyright (C) 2015 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: Tolubaev Denis, StarLine, LIC=----
+License Information: Denis Tolubaev StarLine Flex license: MDK-ARM Standard Cortex-M only: 17 user(s) (mdk_cm_std) Support: Jul 2017
  
 Tool Versions:
-Toolchain:       MDK-Lite  Version: 5.14.0.0
+Toolchain:       MDK-ARM Standard Cortex-M only: 17 user(s)  Version: 5.14.0.0
 Toolchain Path:  C:\Keil\ARM\ARMCC\Bin
 C Compiler:      Armcc.exe V5.05 update 1 (build 106)
 Assembler:       Armasm.exe V5.05 update 1 (build 106)
@@ -21,37 +21,35 @@ Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V2.0.14.0_KEIL
 Dialog DLL:      TCM.DLL V1.14.4.0
  
 <h2>Project:</h2>
-D:\PROJECTS\My_Proj\RC5\MDK-ARM\RC5.uvprojx
-Project File Date:  01/21/2017
+F:\WORK_Space\Мои проекты\My_Proj1\RC5\MDK-ARM\RC5.uvprojx
+Project File Date:  01/22/2017
 
 <h2>Output:</h2>
 Build target 'RC5'
 compiling RC5.c...
-..\Src\RC5.c(182): warning:  #550-D: variable "get_data_buf" was set but never used
-      static uint16_t get_data_buf[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0}; 
-..\Src\RC5.c(238): warning:  #550-D: variable "P" was set but never used
-      static uint16_t P = 0;
-..\Src\RC5.c: 2 warnings, 0 errors
+..\Src\RC5.c(309): warning:  #940-D: missing return statement at end of non-void function "rc5_get"
+  }
+..\Src\RC5.c: 1 warning, 0 errors
 linking...
-Program Size: Code=6064 RO-data=440 RW-data=76 ZI-data=1172  
-"RC5\RC5.axf" - 0 Error(s), 2 Warning(s).
+Program Size: Code=6176 RO-data=440 RW-data=112 ZI-data=1200  
+"RC5\RC5.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 
 Package Vendor: ARM
-                http://www.keil.com/pack/ARM.CMSIS.4.5.0.pack
-                ARM::CMSIS:CORE:4.3.0
+                http://www.keil.com/pack/ARM.CMSIS.4.3.0.pack
+                ARM::CMSIS:CORE:4.1.0
                 CMSIS (Cortex Microcontroller Software Interface Standard)
-   * Component: CORE Version: 4.3.0
+   * Component: CORE Version: 4.1.0
 
 <h2>Collection of Component include folders:</h2>
-  D:\PROJECTS\My_Proj\RC5\MDK-ARM\RTE
-  C:\Keil\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include
-  C:\Keil\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0
+  F:\WORK_Space\Мои проекты\My_Proj1\RC5\MDK-ARM\RTE
+  C:\Keil\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\Include
+  C:\Keil\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0
 
 <h2>Collection of Component Files used:</h2>
 
-   * Component: ARM::CMSIS:CORE:4.3.0
+   * Component: ARM::CMSIS:CORE:4.1.0
 </pre>
 </body>
 </html>

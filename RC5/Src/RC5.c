@@ -5,10 +5,10 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_tim.h"
 
-#define  PWM_FREG        36000 // частоа ШИМ в герцах
-#define  PWM_PRECENT        50 // скважность в процентах
-#define  PRESC_PERIOD      888 // период одного полубита для протокола RC5 в микросекундах
-#define  ACCEPT              5 // допуск в процентах
+#define  PWM_FREG        37600 // частоа ШИМ в герцах
+#define  PWM_PRECENT        25 // скважность в процентах
+#define  PRESC_PERIOD      900 // период одного полубита для протокола RC5 в микросекундах
+#define  ACCEPT             11 // допуск в процентах
 
 
 extern TIM_HandleTypeDef htim3;
@@ -20,6 +20,17 @@ uint32_t pwm_duty_get(uint32_t duty_precent);
 
 typedef enum {STATE_RC5_NONE, STATE_RC5_SEND, STATE_RC5_GET} state_rc5_status_t; // перечисление состоянй автомата
  
+static uint16_t get_data_buf[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0}; 
+static uint16_t Z[]            = {1,1,1,0,0,0,0,0,0,0,1,1,0,0};
+static uint16_t P[]            = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+static uint16_t cnt_data_bit = 0;
+static uint16_t point_1  = 0;
+static uint16_t point_2  = 0;
+static uint16_t period   = 0; 
+static uint8_t  sts_puls = 0;
+static uint8_t  f_period = 0; // Флаг измеренного периода IC
+static uint8_t  cnt_nibble = 0; // Для подсчета полученных полубит
+
 uint32_t pwm_period_get(uint32_t ir_clk_hZ)
 {
   uint32_t tim_clk = 0;
@@ -178,29 +189,18 @@ void rc5_send(uint32_t *data)
 
 uint16_t rc5_get(void)
 {
-    
-    static uint16_t get_data_buf[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0}; 
-    static uint16_t cnt_data_bit = 0;
-    static uint16_t point_1  = 0;
-    static uint16_t point_2  = 0;
-    static uint16_t period   = 0; 
-    static uint8_t  sts_puls = 0;
-    static uint8_t  f_period = 0; // Флаг измеренного периода IC
-    static uint8_t  cnt_nibble = 0; // Для подсчета полученных полубит
-    
+      
 //>>>>>>>>>>>>>>>>>>>>>>>>>> Пишем значения CNT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
     if (sts_puls == 0)
     {
-        sts_puls = 1;
         point_1 = TIM8->CNT;
-        HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
+        //HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
     } 
     else
     {
         if (f_period == 0) f_period = 1;
-        sts_puls = 0;
         point_2 = TIM8->CNT;
-        HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
+        //HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
     }
     
  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -209,47 +209,142 @@ uint16_t rc5_get(void)
     
     if (f_period != 0) // Если обе точки измерялись
     {
-        period = (point_2 - point_1); // Расчитываем период
-   
-        if (  // Проверяем, поподает ли период в рамки 
-               (period >= (PRESC_PERIOD - (PRESC_PERIOD * ACCEPT) / 100)) // >= period - 5%
-            || (period <= (PRESC_PERIOD + (PRESC_PERIOD * ACCEPT) / 100)) // <= period + 5%
-           )
-            { 
-                // Если да, заполняем массив принятых данных
-                if (cnt_data_bit == 0) // Если это первый принятый бит, записываем в нулевую ячейку = 1
-                {
-                    get_data_buf[cnt_data_bit] = 1;
-                } else 
-                
-                if (cnt_nibble == 0) // Если это первый принятый болубит
-                {
-                    cnt_nibble = 1;  // меняем флаг
-                }
-                else if ((cnt_nibble == 1) && (sts_puls == 1))
-                {
-                    
-                }
-                cnt_data_bit++;
-            }
-
-    }
- //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      period = (point_2 - point_1); // Расчитываем период
  
-  //>>>>>>>>>>>>>>>>>>>>>>>>>>  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   
- //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    
-    
-    return period;
+      if (  // Проверяем, поподает ли период в рамки 
+             (period >= (PRESC_PERIOD - (PRESC_PERIOD * ACCEPT) / 100)) // >= period - 11%
+          || (period <= (PRESC_PERIOD + (PRESC_PERIOD * ACCEPT) / 100)) // <= period + 11%
+         )
+         { 
+           // Если да, заполняем массив принятых данных
+           if (cnt_data_bit == 0) // Если это первый принятый бит, записываем в нулевую ячейку = 1
+           {
+             get_data_buf[cnt_data_bit] = 1;
+             if (cnt_data_bit < 15)
+             {
+               cnt_data_bit++;
+             }
+             else
+             {
+               cnt_data_bit = 0;
+             }
+           } 
+           else
+           {
+             if (cnt_nibble == 0) // Если это первый принятый болубит
+             {
+               cnt_nibble = 1;  // меняем флаг
+             }
+             else
+             {
+               cnt_nibble = 0;  // меняем флаг
+               if (sts_puls == 1)
+               {
+                  get_data_buf[cnt_data_bit] = 1;
+               }
+                 if (cnt_data_bit < 15)
+                 {
+                   cnt_data_bit++;
+                 }
+                 else
+                 {
+                   cnt_data_bit = 0;
+                 }
+             }
+           } 
+         } 
+         else if (  // Проверяем, поподает ли период в рамки 
+                    (period >= ((PRESC_PERIOD * 2) - (PRESC_PERIOD * ACCEPT) / 100)) // >= (period * 2) - 11%
+                  ||(period <= ((PRESC_PERIOD * 2) + (PRESC_PERIOD * ACCEPT) / 100)) // <= (period * 2) + 11%
+                 )
+         { 
+             if (sts_puls == 1)
+             {
+               if (cnt_nibble == 0) // Если это первый принятый болубит
+               {
+                 cnt_nibble = 1;  // меняем флаг
+                 get_data_buf[cnt_data_bit] = 1;
+               }
+               else
+               {
+                 cnt_nibble = 0;  // меняем флаг
+                 get_data_buf[cnt_data_bit] = 1;
+            
+                 if (cnt_data_bit < 15)
+                 {
+                   cnt_data_bit++;
+                 }
+                 else
+                 {
+                   cnt_data_bit = 0;
+                 }
+               }
+             } 
+             else 
+             {
+               if (cnt_nibble == 0) // Если это первый принятый болубит
+               {
+                 cnt_nibble = 1;  // меняем флаг
+                 get_data_buf[cnt_data_bit] = 1;
+               }
+               else
+               {
+                 cnt_nibble = 0;  // меняем флаг
+                 get_data_buf[cnt_data_bit] = 0;
+                 if (cnt_data_bit < 15)
+                 {
+                   cnt_data_bit++;
+                 }
+                 else
+                 {
+                   cnt_data_bit = 0;
+                 }
+               }
+             } 
+        } 
+     
+     sts_puls ^= 1;
+     return (get_data_buf[cnt_data_bit - 1]);
+   }
 }
 
 __weak void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-    static uint16_t P = 0;
+  static uint16_t i = 0;
+  static uint16_t u = 0;
+  static uint16_t a = 0;
   /* Prevent unused argument(s) compilation warning */
   UNUSED(htim);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the __HAL_TIM_IC_CaptureCallback could be implemented in the user file
    */
-     P = rc5_get();
+  P[i] = rc5_get();
+  if (i < 15) 
+  {
+    i++;
+  }
+  else
+  {
+    i = 0;
+    for (u = 0; u < 15; u++)
+    {
+      if (P[u] == Z[u])
+      { 
+        a = 1;
+      }
+      else
+      {
+        a = 0;
+      }
+    }
+    if (a == 1)
+    {
+      HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
+    }
+    else
+    {
+      HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
+    }
+  }
+    
 }
