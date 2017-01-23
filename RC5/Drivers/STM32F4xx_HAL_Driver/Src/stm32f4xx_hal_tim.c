@@ -4329,7 +4329,7 @@ __weak void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
 //  /* NOTE : This function Should not be modified, when the callback is needed,
 //            the __HAL_TIM_IC_CaptureCallback could be implemented in the user file
 //   */
-//     rc5_get();
+
 //}
 
 /**

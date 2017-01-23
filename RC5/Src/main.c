@@ -47,11 +47,17 @@ TIM_HandleTypeDef htim8;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
                         // |s|s|tb| sys adress|  command   |
-uint32_t cmd_on_off [14] = {1,1, 0, 0,0,0,0,0, 0,0,1,1,0,0};
-uint32_t cmd_mute   [14] = {1,1, 0, 0,0,0,0,0, 0,0,1,1,0,1};
-uint32_t cmd_tv     [14] = {1,1, 0, 0,0,0,0,0, 1,1,1,1,1,1};
-uint32_t cmd_no_name[14] = {1,1, 0, 0,0,0,0,0, 1,1,1,1,0,0};
-uint32_t cmd_ch_up  [14] = {1,1, 0, 0,0,0,0,0, 0,1,0,0,0,0};
+uint16_t cmd_on_off [14] = {1,1, 0, 0,0,0,0,0, 0,0,1,1,0,0};
+uint16_t cmd_mute   [14] = {1,1, 0, 0,0,0,0,0, 0,0,1,1,0,1};
+uint16_t cmd_tv     [14] = {1,1, 0, 0,0,0,0,0, 1,1,1,1,1,1};
+uint16_t cmd_no_name[14] = {1,1, 0, 0,0,0,0,0, 1,1,1,1,0,0};
+uint16_t cmd_ch_up  [14] = {1,1, 0, 0,0,0,0,0, 0,1,0,0,0,0};
+
+extern uint16_t get_data_buf[14];
+
+static uint8_t i = 0;
+static uint8_t a = 0;
+
 
 /* USER CODE END PV */
 
@@ -107,14 +113,38 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    rc5_send(cmd_on_off);
+    rc5_send(&cmd_on_off[0]);
     HAL_Delay(5);
       
 //    rc5_send(cmd_tv);
 //    HAL_Delay(5);
 //    rc5_send(cmd_mute);
 //    HAL_Delay(5);
-      
+    
+    
+       
+        for (i = 0; i < 13; i++)
+        {
+            
+            if (get_data_buf[i] == cmd_on_off[i])
+            {
+              a ++;
+            }
+            else
+            {
+              if (a > 0) a--;
+            }
+        } 
+        
+        if (a == 13)
+        {
+            a = 0;
+            HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+        }
+        else
+        {
+            a = 0;
+        }
   }
   /* USER CODE END 3 */
 
