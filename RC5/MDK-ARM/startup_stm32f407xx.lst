@@ -869,12 +869,12 @@ ARM Macro Assembler    Page 14
               00000000 
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
-erwork --depend=rc5\startup_stm32f407xx.d -orc5\startup_stm32f407xx.o -I"F:\WOR
-K_Space\Мои проекты\My_Proj\RC5\MDK-ARM\RTE" -IC:\Keil\ARM\PACK\ARM\CMSIS\4.3.0
-\CMSIS\Include -IC:\Keil\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0 --predefine="__MICRO
-LIB SETA 1" --predefine="__UVISION_VERSION SETA 514" --predefine="_RTE_ SETA 1"
- --predefine="STM32F407xx SETA 1" --list=startup_stm32f407xx.lst startup_stm32f
-407xx.s
+erwork --depend=rc5\startup_stm32f407xx.d -orc5\startup_stm32f407xx.o -ID:\PROJ
+ECTS\My_Proj2\RC5\MDK-ARM\RTE -IC:\Keil\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include 
+-IC:\Keil\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0 --predefine="__EVAL SETA 1" --prede
+fine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 514" --predefine="
+_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --list=startup_stm32f407xx.lst s
+tartup_stm32f407xx.s
 
 
 
@@ -1959,4 +1959,4 @@ Symbol: __main
       At line 192 in file startup_stm32f407xx.s
 Comment: __main used once
 2 symbols
-445 symbols in table
+446 symbols in table

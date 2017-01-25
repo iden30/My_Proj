@@ -53,10 +53,11 @@ uint16_t cmd_tv     [14] = {1,1, 0, 0,0,0,0,0, 1,1,1,1,1,1};
 uint16_t cmd_no_name[14] = {1,1, 0, 0,0,0,0,0, 1,1,1,1,0,0};
 uint16_t cmd_ch_up  [14] = {1,1, 0, 0,0,0,0,0, 0,1,0,0,0,0};
 
-extern uint16_t get_data_buf[14];
+extern uint16_t get_period_buf[25];
+extern uint16_t get_data_buf[15];
 
-static uint8_t i = 0;
-static uint8_t a = 0;
+//static uint8_t i = 0;
+//static uint8_t a = 0;
 
 
 /* USER CODE END PV */
@@ -68,6 +69,7 @@ static void MX_GPIO_Init(void);
 //static void MX_TIM3_Init(void);
 //static void MX_TIM8_Init(void);                                    
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+extern void calc_rc5 (uint16_t *period_buf, uint16_t *data_buf);
                                 
 
 /* USER CODE BEGIN PFP */
@@ -76,6 +78,7 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+
 
 /* USER CODE END 0 */
 
@@ -97,8 +100,6 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-//  MX_TIM3_Init();
-//  MX_TIM8_Init();
 
   /* USER CODE BEGIN 2 */
   rc5_init();
@@ -115,37 +116,13 @@ int main(void)
   /* USER CODE BEGIN 3 */
     rc5_send(&cmd_on_off[0]);
     HAL_Delay(5);
-      
+    calc_rc5(get_period_buf, &get_data_buf[0]);  
 //    rc5_send(cmd_tv);
 //    HAL_Delay(5);
 //    rc5_send(cmd_mute);
 //    HAL_Delay(5);
     
-    
-       
-        for (i = 0; i < 13; i++)
-        {
-            
-            if (get_data_buf[i] == cmd_on_off[i])
-            {
-              a ++;
-            }
-            else
-            {
-              if (a > 0) a--;
-            }
-        } 
-        
-        if (a == 13)
-        {
-            a = 0;
-            HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
-        }
-        else
-        {
-            a = 0;
-        }
-  }
+
   /* USER CODE END 3 */
 
 }

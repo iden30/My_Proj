@@ -3,7 +3,7 @@
 <title>Static Call Graph - [RC5\RC5.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image RC5\RC5.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050106: Last Updated: Mon Jan 23 12:56:09 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050106: Last Updated: Thu Jan 26 01:55:30 2017
 <BR><P>
 <H3>Maximum Stack Usage =        152 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -418,10 +418,6 @@ Global Symbols
 <LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_Base_MspInit
 </UL>
 
-<P><STRONG><a name="[a1]"></a>HAL_GPIO_TogglePin</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, stm32f4xx_hal_gpio.o(i.HAL_GPIO_TogglePin))
-<BR><BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-</UL>
-
 <P><STRONG><a name="[95]"></a>HAL_GPIO_WritePin</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, stm32f4xx_hal_gpio.o(i.HAL_GPIO_WritePin))
 <BR><BR>[Called By]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_GPIO_Init
 </UL>
@@ -826,13 +822,19 @@ Global Symbols
 
 <P><STRONG><a name="[ac]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
 
-<P><STRONG><a name="[5b]"></a>main</STRONG> (Thumb, 94 bytes, Stack size 0 bytes, main.o(i.main))
+<P><STRONG><a name="[a1]"></a>calc_rc5</STRONG> (Thumb, 176 bytes, Stack size 36 bytes, rc5.o(i.calc_rc5))
+<BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = calc_rc5
+</UL>
+<BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[5b]"></a>main</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, main.o(i.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = main &rArr; rc5_init &rArr; MX_TIM3_Init &rArr; HAL_TIM_Base_Init &rArr; HAL_TIM_Base_MspInit &rArr; HAL_GPIO_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rc5_send
 <LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rc5_init
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calc_rc5
 <LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_TogglePin
 <LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemClock_Config
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_GPIO_Init
@@ -856,7 +858,7 @@ Global Symbols
 <LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_TIM3_Init
 </UL>
 
-<P><STRONG><a name="[7a]"></a>rc5_get</STRONG> (Thumb, 90 bytes, Stack size 12 bytes, rc5.o(i.rc5_get))
+<P><STRONG><a name="[7a]"></a>rc5_get</STRONG> (Thumb, 62 bytes, Stack size 12 bytes, rc5.o(i.rc5_get))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = rc5_get
 </UL>
 <BR>[Called By]<UL><LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IC_CaptureCallback

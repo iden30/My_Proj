@@ -9,27 +9,22 @@
 #define  PWM_PRECENT        25 // скважность в процентах
 #define  PRESC_PERIOD      900 // период одного полубита для протокола RC5 в микросекундах
 #define  ACCEPT             11 // допуск в процентах
+#define  COUNT_PERIOD       22
 
 
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim8;
 
+static uint16_t cnt_period = 0;
+static uint16_t previous_value = 0;
+
+uint16_t get_period_buf[26] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+uint16_t get_data_buf[15];
+
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 uint32_t pwm_period_get(uint32_t ir_clk_hZ);
 uint32_t pwm_duty_get(uint32_t duty_precent);
 
-typedef enum {STATE_RC5_NONE, STATE_RC5_SEND, STATE_RC5_GET} state_rc5_status_t; // перечисление состоянй автомата
-
-static uint16_t cnt_data_bit = 0;
-static uint16_t point_1  = 0;
-static uint16_t point_2  = 0;
-static uint16_t period   = 0; 
-static uint8_t  puls = 0;
-static uint8_t  f_period = 0; // Флаг измеренного периода IC
-static uint8_t  cnt_nibble = 0; // Для подсчета полученных полубит
-
-
-uint16_t get_data_buf[14];
 
 uint32_t pwm_period_get(uint32_t ir_clk_hZ)
 {
@@ -190,121 +185,102 @@ extern void rc5_send(uint16_t * data)
 
 extern void rc5_get(uint16_t * data)
 {
-      
+               
 //>>>>>>>>>>>>>>>>>>>>>>>>>> Пишем значения CNT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
-    if (puls == 0)
+   
+    if (cnt_period < COUNT_PERIOD)
     {
-        point_1 = TIM8->CNT;
-        //HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
-    } 
+        if (previous_value == 0)
+        {
+            previous_value = TIM8->CNT;
+        }
+        else
+        {
+            data[cnt_period] = (TIM8->CNT - previous_value);
+            previous_value = TIM8->CNT;
+            cnt_period++;
+        }
+        
+    }  
     else
     {
-        if (!f_period) f_period = 1;
-        point_2 = TIM8->CNT;
-        //HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
+        data[cnt_period] = (TIM8->CNT - previous_value); 
+        if (data[25] == 0)
+        {
+           previous_value = 0; 
+        }
+        cnt_period = 0;
+    }        
+}       
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+extern void calc_rc5 (uint16_t *period_buf, uint16_t *data_buf)
+{
+    static uint16_t delta_p = 0;
+    uint16_t cnt_period = 0;
+    uint16_t cnt_bit = 0;
+    uint16_t bit = 0;
+    #define TOLERANCE     5 // Допуск в %
+    delta_p = ((period_buf[0] + period_buf[1]) / 2); // усредненная длительность импульса
+    
+   if (period_buf[0] != 0)
+   {       
+        for (cnt_period = 0; cnt_period < 25; cnt_period++)
+        {
+            if (
+                    (period_buf[cnt_period] > (delta_p - ((delta_p * TOLERANCE) / 100)))
+                 && (period_buf[cnt_period] < (delta_p + ((delta_p * TOLERANCE) / 100)))
+               )
+            {
+                if (cnt_period == 0) 
+                {
+                    data_buf[cnt_bit] = 1;
+                    cnt_bit++;
+                }
+                else if (
+                            ((cnt_period % 2) == 0)
+                         && (bit == 0)
+                        )
+                        {
+                            data_buf[cnt_bit] = 1;
+                            cnt_bit++;
+                        }
+                        else if (
+                                    ((cnt_period % 2) == 0)
+                                 && (bit == 1)
+                                )
+                        {
+                            data_buf[cnt_bit] = 0;
+                            cnt_bit++;
+                        }
+                
+            }
+            else if (
+                         (period_buf[cnt_period] > ((delta_p * 2) - (((delta_p * 2) * TOLERANCE) / 100)))
+                      && (period_buf[cnt_period] < ((delta_p * 2) + (((delta_p * 2) * TOLERANCE) / 100)))
+                    )
+            {
+                
+                if (
+                       ((cnt_period % 2) != 0)
+                    && (bit == 0)
+                   )
+                {
+                    data_buf[cnt_bit] = 1;
+                    cnt_bit++;
+                }
+                else if (
+                            ((cnt_period % 2) != 0)
+                         && (bit == 1)
+                        )
+                {
+                    data_buf[cnt_bit] = 0;
+                    cnt_bit++;
+                }
+                bit ^= 1;
+            }     
+        }
     }
-    
- //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    
-    //>>>>>>>>>>>>>>>>>>>>>> Декодируем данные >>>>>>>>>>>>>>>>>>>>>>>>>
-    
-    if (f_period != 0) // Если обе точки измерялись
-    {
-      period = (point_2 - point_1); // Расчитываем период
- 
-      if (  // Проверяем, поподает ли период в рамки 
-             (period >= (PRESC_PERIOD - (PRESC_PERIOD * ACCEPT) / 100)) // >= period - 11%
-          || (period <= (PRESC_PERIOD + (PRESC_PERIOD * ACCEPT) / 100)) // <= period + 11%
-         )
-         { 
-           // Если да, заполняем массив принятых данных
-           if (cnt_data_bit == 0) // Если это первый принятый бит, записываем в нулевую ячейку = 1
-           {
-             data[cnt_data_bit] = 1;
-             if (cnt_data_bit < 13)
-             {
-               cnt_data_bit++;
-             }
-             else
-             {
-               cnt_data_bit = 0;
-             }
-           } 
-           else
-           {
-             if (cnt_nibble == 0) // Если это первый принятый болубит
-             {
-               cnt_nibble = 1;  // меняем флаг
-             }
-             else
-             {
-               cnt_nibble = 0;  // меняем флаг
-               if (puls == 0)
-               {
-                  data[cnt_data_bit] = 0;
-               }
-                 if (cnt_data_bit < 13)
-                 {
-                   cnt_data_bit++;
-                 }
-                 else
-                 {
-                   cnt_data_bit = 0;
-                 }
-             }
-           } 
-         } 
-         else if (  // Проверяем, поподает ли период в рамки 
-                    (period >= ((PRESC_PERIOD * 2) - (PRESC_PERIOD * ACCEPT) / 100)) // >= (period * 2) - 11%
-                  ||(period <= ((PRESC_PERIOD * 2) + (PRESC_PERIOD * ACCEPT) / 100)) // <= (period * 2) + 11%
-                 )
-         { 
-             if (puls == 1)
-             {
-               if (cnt_nibble == 0) // Если это первый принятый болубит
-               {
-                 cnt_nibble = 1;  // меняем флаг
-                 data[cnt_data_bit] = 1;
-               }
-               else
-               {
-                 cnt_nibble = 0;  // меняем флаг
-                 data[cnt_data_bit] = 1;
-            
-                 if (cnt_data_bit < 13)
-                 {
-                   cnt_data_bit++;
-                 }
-                 else
-                 {
-                   cnt_data_bit = 0;
-                 }
-               }
-             } 
-             else 
-             {
-               if (cnt_nibble == 0) // Если это первый принятый болубит
-               {
-                 cnt_nibble = 1;  // меняем флаг
-                 data[cnt_data_bit] = 1;
-               }
-               else
-               {
-                 cnt_nibble = 0;  // меняем флаг
-                 data[cnt_data_bit] = 0;
-                 if (cnt_data_bit < 13)
-                 {
-                   cnt_data_bit++;
-                 }
-                 else
-                 {
-                   cnt_data_bit = 0;
-                 }
-               }
-             } 
-        } 
-    }
-    puls ^= 1;
 }
 
 
@@ -315,7 +291,5 @@ __weak void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
     /* NOTE : This function Should not be modified, when the callback is needed,
             the __HAL_TIM_IC_CaptureCallback could be implemented in the user file
     */
-  rc5_get(&get_data_buf[0]);
-
-  
+  rc5_get(&get_period_buf[0]);
 }

@@ -10,5 +10,6 @@
 extern void rc5_init(void);
 extern void rc5_send(uint16_t * data);
 extern void rc5_get(uint16_t * data);
+extern void calc_rc5 (uint16_t *period_buf, uint16_t *data_buf);
 
 #endif
