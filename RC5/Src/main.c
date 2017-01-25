@@ -124,7 +124,7 @@ int main(void)
     
 
   /* USER CODE END 3 */
-
+  }
 }
 
 /** System Clock Configuration

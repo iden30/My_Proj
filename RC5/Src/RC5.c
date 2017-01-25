@@ -237,22 +237,22 @@ extern void calc_rc5 (uint16_t *period_buf, uint16_t *data_buf)
                     data_buf[cnt_bit] = 1;
                     cnt_bit++;
                 }
-                else if (
-                            ((cnt_period % 2) == 0)
-                         && (bit == 0)
-                        )
-                        {
-                            data_buf[cnt_bit] = 1;
-                            cnt_bit++;
-                        }
-                        else if (
-                                    ((cnt_period % 2) == 0)
-                                 && (bit == 1)
-                                )
-                        {
-                            data_buf[cnt_bit] = 0;
-                            cnt_bit++;
-                        }
+                
+                if (((cnt_period % 2) == 0) && (bit == 0))
+                {
+                    data_buf[cnt_bit] = 1;
+                    cnt_bit++;
+                }
+                if (((cnt_period % 2) == 0) && (bit == 1))
+                {
+                    data_buf[cnt_bit] = 0;
+                    //cnt_bit++;
+                }
+                if (((cnt_period % 2) != 0) && (bit == 1))
+                {
+                    data_buf[cnt_bit] = 0;
+                    cnt_bit++;
+                }
                 
             }
             else if (
@@ -261,18 +261,12 @@ extern void calc_rc5 (uint16_t *period_buf, uint16_t *data_buf)
                     )
             {
                 
-                if (
-                       ((cnt_period % 2) != 0)
-                    && (bit == 0)
-                   )
+                if (((cnt_period % 2) == 0) && (bit == 0))
                 {
                     data_buf[cnt_bit] = 1;
                     cnt_bit++;
                 }
-                else if (
-                            ((cnt_period % 2) != 0)
-                         && (bit == 1)
-                        )
+                else if (((cnt_period % 2) == 0) && (bit == 1))
                 {
                     data_buf[cnt_bit] = 0;
                     cnt_bit++;
