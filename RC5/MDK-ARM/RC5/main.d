@@ -29,4 +29,5 @@ rc5\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 rc5\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
 rc5\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 rc5\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
+rc5\main.o: ../Inc/RC5_IR_Emul_Receiver.h
 rc5\main.o: ../Inc/RC5.h

@@ -11,12 +11,20 @@
 #define  ACCEPT             11 // допуск в процентах
 #define  COUNT_PERIOD       22
 
+#define   NOMINAL_HALF_BIT_TIME_US   889  /* Nominal half bit time in µs */
+#define   MIN_HALF_BIT_TIME_US       800 // 640  /* Minimum half bit time in µs */
+#define   MAX_HALF_BIT_TIME_US       977 // 1140 /* Maximum half bit time in µs */
+
+#define   NOMINAL_FULL_BIT_TIME_US   1778 /* Nominal Full bit time in µs */
+#define   MIN_FULL_BIT_TIME_US       1600 // 1340 /* Minimum Full bit time in µs */
+#define   MAX_FULL_BIT_TIME_US       1995 // 2220 /* Maximum Full bit time in µs */
+
 
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim8;
 
 static uint16_t cnt_period = 0;
-static uint16_t previous_value = 0;
+
 
 uint16_t get_period_buf[26] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 uint16_t get_data_buf[15];
@@ -185,30 +193,27 @@ extern void rc5_send(uint16_t * data)
 
 extern void rc5_get(uint16_t * data)
 {
-               
+  static uint16_t prev_value = 0;               
 //>>>>>>>>>>>>>>>>>>>>>>>>>> Пишем значения CNT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
    
     if (cnt_period < COUNT_PERIOD)
     {
-        if (previous_value == 0)
+        if (prev_value == 0)
         {
-            previous_value = TIM8->CNT;
+            prev_value = TIM8->CNT;
         }
         else
         {
-            data[cnt_period] = (TIM8->CNT - previous_value);
-            previous_value = TIM8->CNT;
+            data[cnt_period] = (TIM8->CNT - prev_value);
+            prev_value = TIM8->CNT;
             cnt_period++;
         }
         
     }  
     else
     {
-        data[cnt_period] = (TIM8->CNT - previous_value); 
-        if (data[25] == 0)
-        {
-           previous_value = 0; 
-        }
+        data[cnt_period] = (TIM8->CNT - prev_value); 
+        prev_value = 0; 
         cnt_period = 0;
     }        
 }       

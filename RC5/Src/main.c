@@ -33,6 +33,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_hal.h"
+#include "RC5_IR_Emul_Receiver.h"
 
 /* USER CODE BEGIN Includes */
 

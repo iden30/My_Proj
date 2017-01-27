@@ -428,6 +428,11 @@
               <FileType>1</FileType>
               <FilePath>..\Src\RC5.c</FilePath>
             </File>
+            <File>
+              <FileName>RC5_IR_Emul_Receiver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\RC5_IR_Emul_Receiver.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

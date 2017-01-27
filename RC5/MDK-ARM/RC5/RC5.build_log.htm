@@ -22,14 +22,111 @@ Dialog DLL:      TCM.DLL V1.14.4.0
  
 <h2>Project:</h2>
 D:\PROJECTS\My_Proj2\RC5\MDK-ARM\RC5.uvprojx
-Project File Date:  01/24/2017
+Project File Date:  01/27/2017
 
 <h2>Output:</h2>
 Build target 'RC5'
-compiling main.c...
-linking...
-Program Size: Code=6316 RO-data=440 RW-data=44 ZI-data=1228  
-"RC5\RC5.axf" - 0 Error(s), 0 Warning(s).
+compiling RC5_IR_Emul_Receiver.c...
+..\Src\RC5_IR_Emul_Receiver.c(80): error:  #20: identifier "EXTI_InitTypeDef" is undefined
+    EXTI_InitTypeDef EXTI_InitStructure;
+..\Src\RC5_IR_Emul_Receiver.c(106): warning:  #223-D: function "EXTI_ClearITPendingBit" declared implicitly
+    EXTI_ClearITPendingBit(RC5_EXTI_LINE);
+..\Src\RC5_IR_Emul_Receiver.c(106): error:  #20: identifier "EXTI_Line1" is undefined
+    EXTI_ClearITPendingBit(RC5_EXTI_LINE);
+..\Src\RC5_IR_Emul_Receiver.c(108): error:  #20: identifier "EXTI_Mode_Interrupt" is undefined
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+..\Src\RC5_IR_Emul_Receiver.c(109): error:  #20: identifier "EXTI_Trigger_Rising_Falling" is undefined
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+..\Src\RC5_IR_Emul_Receiver.c(111): warning:  #223-D: function "EXTI_Init" declared implicitly
+    EXTI_Init(&EXTI_InitStructure);
+..\Src\RC5_IR_Emul_Receiver.c(125): error:  #20: identifier "EXTI_Line1" is undefined
+    EXTI->IMR |= RC5_EXTI_LINE;
+..\Src\RC5_IR_Emul_Receiver.c(128): warning:  #223-D: function "TIM_DeInit" declared implicitly
+    TIM_DeInit(RC5_TIM); 
+..\Src\RC5_IR_Emul_Receiver.c(129): error:  #136: struct "<unnamed>" has no field "TIM_Period"
+    TIM_TimeBaseStructure.TIM_Period = 0xFFFF;
+..\Src\RC5_IR_Emul_Receiver.c(130): error:  #136: struct "<unnamed>" has no field "TIM_Prescaler"
+    TIM_TimeBaseStructure.TIM_Prescaler = RC5_TIM_PRESCALER;       
+..\Src\RC5_IR_Emul_Receiver.c(131): error:  #136: struct "<unnamed>" has no field "TIM_ClockDivision"
+    TIM_TimeBaseStructure.TIM_ClockDivision = 0;    
+..\Src\RC5_IR_Emul_Receiver.c(132): error:  #136: struct "<unnamed>" has no field "TIM_CounterMode"
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;   
+..\Src\RC5_IR_Emul_Receiver.c(132): error:  #20: identifier "TIM_CounterMode_Up" is undefined
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;   
+..\Src\RC5_IR_Emul_Receiver.c(133): warning:  #223-D: function "TIM_TimeBaseInit" declared implicitly
+    TIM_TimeBaseInit(RC5_TIM, &TIM_TimeBaseStructure);
+..\Src\RC5_IR_Emul_Receiver.c(136): warning:  #223-D: function "TIM_ClearITPendingBit" declared implicitly
+    TIM_ClearITPendingBit(RC5_TIM, TIM_IT_Update);      
+..\Src\RC5_IR_Emul_Receiver.c(136): error:  #20: identifier "TIM_IT_Update" is undefined
+    TIM_ClearITPendingBit(RC5_TIM, TIM_IT_Update);      
+..\Src\RC5_IR_Emul_Receiver.c(146): warning:  #223-D: function "TIM_GetITStatus" declared implicitly
+    if (TIM_GetITStatus(RC5_TIM, TIM_IT_Update) != RESET) /* Update event occured */
+..\Src\RC5_IR_Emul_Receiver.c(146): error:  #20: identifier "TIM_IT_Update" is undefined
+    if (TIM_GetITStatus(RC5_TIM, TIM_IT_Update) != RESET) /* Update event occured */
+..\Src\RC5_IR_Emul_Receiver.c(149): error:  #20: identifier "GPIO_Pin_1" is undefined
+      RC5_data[RC5_Indexdata++] = RC5_GPIO_PORT->IDR & RC5_GPIO_PIN;
+..\Src\RC5_IR_Emul_Receiver.c(174): warning:  #223-D: function "TIM_ITConfig" declared implicitly
+        TIM_ITConfig(RC5_TIM, TIM_IT_Update, DISABLE);
+..\Src\RC5_IR_Emul_Receiver.c(177): warning:  #223-D: function "TIM_Cmd" declared implicitly
+        TIM_Cmd(RC5_TIM, DISABLE); 
+..\Src\RC5_IR_Emul_Receiver.c(181): warning:  #223-D: function "TIM_ClearITPendingBit" declared implicitly
+      TIM_ClearITPendingBit(RC5_TIM, TIM_IT_Update);
+..\Src\RC5_IR_Emul_Receiver.c(193): warning:  #223-D: function "EXTI_GetITStatus" declared implicitly
+    if(EXTI_GetITStatus(RC5_EXTI_LINE) != RESET) 
+..\Src\RC5_IR_Emul_Receiver.c(193): error:  #20: identifier "EXTI_Line1" is undefined
+    if(EXTI_GetITStatus(RC5_EXTI_LINE) != RESET) 
+..\Src\RC5_IR_Emul_Receiver.c(205): warning:  #223-D: function "TIM_Cmd" declared implicitly
+        TIM_Cmd(RC5_TIM, ENABLE); 
+..\Src\RC5_IR_Emul_Receiver.c(211): warning:  #223-D: function "TIM_Cmd" declared implicitly
+        TIM_Cmd(RC5_TIM, DISABLE);
+..\Src\RC5_IR_Emul_Receiver.c(236): warning:  #223-D: function "TIM_ITConfig" declared implicitly
+          TIM_ITConfig(RC5_TIM, TIM_IT_Update, ENABLE);
+..\Src\RC5_IR_Emul_Receiver.c(236): error:  #20: identifier "TIM_IT_Update" is undefined
+          TIM_ITConfig(RC5_TIM, TIM_IT_Update, ENABLE);
+..\Src\RC5_IR_Emul_Receiver.c(270): warning:  #223-D: function "TIM_Cmd" declared implicitly
+        TIM_Cmd(RC5_TIM, ENABLE);
+..\Src\RC5_IR_Emul_Receiver.c(273): warning:  #223-D: function "TIM_ITConfig" declared implicitly
+        TIM_ITConfig(RC5_TIM, TIM_IT_Update, ENABLE);
+..\Src\RC5_IR_Emul_Receiver.c(273): error:  #20: identifier "TIM_IT_Update" is undefined
+        TIM_ITConfig(RC5_TIM, TIM_IT_Update, ENABLE);
+..\Src\RC5_IR_Emul_Receiver.c(289): warning:  #223-D: function "EXTI_ClearITPendingBit" declared implicitly
+      EXTI_ClearITPendingBit(RC5_EXTI_LINE);
+..\Src\RC5_IR_Emul_Receiver.c(309): error:  #20: identifier "GPIO_Pin_1" is undefined
+     if(RC5_data[0] & RC5_GPIO_PIN)
+..\Src\RC5_IR_Emul_Receiver.c(322): error:  #20: identifier "GPIO_Pin_1" is undefined
+       if(RC5_data[RC5_dataIndex] & RC5_GPIO_PIN)
+..\Src\RC5_IR_Emul_Receiver.c(332): error:  #20: identifier "GPIO_Pin_1" is undefined
+       if(RC5_data[RC5_dataIndex] & RC5_GPIO_PIN)
+..\Src\RC5_IR_Emul_Receiver.c(363): error:  #20: identifier "TIM15" is undefined
+   if((RC5_TIM == TIM1) || (RC5_TIM == TIM8) || (RC5_TIM == TIM15) ||
+..\Src\RC5_IR_Emul_Receiver.c(364): error:  #20: identifier "TIM16" is undefined
+     (RC5_TIM == TIM16) || (RC5_TIM == TIM17)
+..\Src\RC5_IR_Emul_Receiver.c(364): error:  #20: identifier "TIM17" is undefined
+     (RC5_TIM == TIM16) || (RC5_TIM == TIM17)
+..\Src\RC5_IR_Emul_Receiver.c(368): warning:  #223-D: function "RCC_APB2PeriphClockCmd" declared implicitly
+      RCC_APB2PeriphClockCmd(RC5_TIM_CLK, ENABLE);
+..\Src\RC5_IR_Emul_Receiver.c(368): error:  #20: identifier "RCC_APB1Periph_TIM2" is undefined
+      RCC_APB2PeriphClockCmd(RC5_TIM_CLK, ENABLE);
+..\Src\RC5_IR_Emul_Receiver.c(375): warning:  #223-D: function "RCC_APB1PeriphClockCmd" declared implicitly
+      RCC_APB1PeriphClockCmd(RC5_TIM_CLK, ENABLE);
+..\Src\RC5_IR_Emul_Receiver.c(375): error:  #20: identifier "RCC_APB1Periph_TIM2" is undefined
+      RCC_APB1PeriphClockCmd(RC5_TIM_CLK, ENABLE);
+..\Src\RC5_IR_Emul_Receiver.c(380): warning:  #223-D: function "RCC_APB2PeriphClockCmd" declared implicitly
+    RCC_APB2PeriphClockCmd(RC5_GPIO_CLK | RCC_APB2Periph_AFIO , ENABLE);
+..\Src\RC5_IR_Emul_Receiver.c(380): error:  #20: identifier "RCC_APB2Periph_GPIOB" is undefined
+    RCC_APB2PeriphClockCmd(RC5_GPIO_CLK | RCC_APB2Periph_AFIO , ENABLE);
+..\Src\RC5_IR_Emul_Receiver.c(380): error:  #20: identifier "RCC_APB2Periph_AFIO" is undefined
+    RCC_APB2PeriphClockCmd(RC5_GPIO_CLK | RCC_APB2Periph_AFIO , ENABLE);
+..\Src\RC5_IR_Emul_Receiver.c(393): error:  #136: struct "<unnamed>" has no field "GPIO_Pin"
+    GPIO_InitStructure.GPIO_Pin = RC5_GPIO_PIN;
+..\Src\RC5_IR_Emul_Receiver.c(393): error:  #20: identifier "GPIO_Pin_1" is undefined
+    GPIO_InitStructure.GPIO_Pin = RC5_GPIO_PIN;
+..\Src\RC5_IR_Emul_Receiver.c(394): error:  #136: struct "<unnamed>" has no field "GPIO_Mode"
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+..\Src\RC5_IR_Emul_Receiver.c(394): error:  #20: identifier "GPIO_Mode_IN_FLOATING" is undefined
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+..\Src\RC5_IR_Emul_Receiver.c: 19 warnings, 30 errors
+"RC5\RC5.axf" - 30 Error(s), 19 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -47,6 +144,7 @@ Package Vendor: ARM
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:4.3.0
+Target not created.
 </pre>
 </body>
 </html>
